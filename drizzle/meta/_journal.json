@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1737499992463,
+      "tag": "0000_public_sabra",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737501521635,
+      "tag": "0001_sudden_puck",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1737501743265,
+      "tag": "0002_gifted_mister_fear",
+      "breakpoints": true
+    }
+  ]
+}
