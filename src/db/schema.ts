@@ -51,3 +51,8 @@ export const jobs = pgTable("jobs", {
   favourie: boolean(),
   ...timestamps
 })
+
+export const SYSTEM = pgTable("system", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  mutaAll: boolean()
+})
