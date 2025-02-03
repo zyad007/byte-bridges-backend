@@ -5,7 +5,7 @@ const timestamps = {
   createdAt: timestamp().defaultNow().notNull(),
 }
 
-export const users = pgTable("users", {
+export const Users = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
@@ -15,28 +15,28 @@ export const users = pgTable("users", {
   ...timestamps
 });
 
-export const sessions = pgTable("sessions", {
+export const Sessions = pgTable("sessions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => Users.id),
   ip: varchar(),
   ...timestamps
 })
 
-export const workers = pgTable("workers", {
+export const Workers = pgTable("workers", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").references(() => users.id),
+  search_url: varchar(),
   status: varchar().notNull(),
   jobCount: integer().default(0),
   notify: boolean(),
   ...timestamps
 })
 
-export const jobs = pgTable("jobs", {
+export const Jobs = pgTable("jobs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   utl: varchar(),
   title: varchar(),
   description: varchar(),
-  workerId: integer("worked_id").references(() => workers.id),
+  workerId: integer("worked_id").references(() => Workers.id),
   postedAt: timestamp(),
   type: varchar().notNull(),
   amount: integer(),
