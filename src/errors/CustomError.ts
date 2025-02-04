@@ -1,13 +1,15 @@
 class CustomError extends Error {
 
-    public name: string;
+    public code: number;
     public message: string;
 
-    constructor(name: string, message: string = '') {
+
+    constructor(code: number, message: string = '') {
         super(message);
-        this.name = name;
+        this.code = code;
         this.message = message;
     }
+
 
 }
 

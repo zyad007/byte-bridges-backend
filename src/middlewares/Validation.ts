@@ -10,16 +10,14 @@ export const bodyValidation = (schema: AnyZodObject) => {
             await schema.parseAsync(req.body);
             return next();
         }
-        catch(error) {
-            if(error instanceof ZodError) {
-                return next(new BadRequest('Invalid payload', error.issues.map(x => x.message)));
+        catch (error) {
+            if (error instanceof ZodError) {
+                return next(new BadRequest('Invalid payload', 0, error.issues.map(x => x.message)));
             }
-            throw next(new BadRequest(JSON.stringify(error)));
+            throw next(new BadRequest(JSON.stringify(error), 0, []));
         }
-        
     }
-
-} 
+}
 
 export const paramValidation = (schema: AnyZodObject) => {
 
@@ -29,13 +27,11 @@ export const paramValidation = (schema: AnyZodObject) => {
             await schema.safeParseAsync(req.params);
             return next();
         }
-        catch(error) {
-            if(error instanceof ZodError) {
-                return next(new BadRequest('Invalid payload', error.issues.map(x => x.message)));
+        catch (error) {
+            if (error instanceof ZodError) {
+                return next(new BadRequest('Invalid payload', 0, error.issues.map(x => x.message)));
             }
-            throw next(new BadRequest(JSON.stringify(error)));
+            throw next(new BadRequest(JSON.stringify(error), 0, []));
         }
-        
     }
-
 } 
