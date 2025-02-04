@@ -54,7 +54,6 @@ export const Jobs = pgTable("jobs", {
   ignore: boolean('ignore'),
   favourite: boolean('favourite'),
   ...timestamps
-
 })
 
 export const SYSTEM = pgTable("system", {
