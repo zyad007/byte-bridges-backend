@@ -2,6 +2,7 @@ import express, { json } from "express";
 import { globalErrorHandler } from "./middlewares/handlers/GlobalErrorHandler";
 import testRouter from "./api/TestRouter";
 import './db/index'
+import jobsRouter from "./api/JobsRouter";
 
 console.log('ENV:' + process.env.NODE_ENV);
 
@@ -13,7 +14,7 @@ app.use(json());
 
 // Routers Middleware
 app.use('/test', testRouter);
-
+app.use('/jobs', jobsRouter);
 // Error Hadler Middleware
 app.use(globalErrorHandler);
 

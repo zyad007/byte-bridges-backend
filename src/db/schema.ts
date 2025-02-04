@@ -33,23 +33,23 @@ export const Workers = pgTable("workers", {
 
 export const Jobs = pgTable("jobs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  utl: varchar(),
+  url: varchar(),
   title: varchar(),
   description: varchar(),
-  workerId: integer("worked_id").references(() => Workers.id),
-  postedAt: timestamp(),
+  workerId: integer("worker_id").references(() => Workers.id),
+  postedAt: timestamp("posted_at"),
   type: varchar().notNull(),
   amount: integer(),
   tags: varchar(),
-  clientRate: numeric(),
-  clientSpent: integer(),
-  clientLocation: varchar(),
-  paymentVerfied: boolean(),
-  proposalCount: varchar(),
+  clientRate: numeric("client_rate"),
+  clientSpent: integer("client_spent"),
+  clientLocation: varchar("client_location"),
+  paymentVerfied: boolean("payment_verified"),
+  proposalCount: varchar("proposal_count"),
 
   ignore: boolean(),
-  favourie: boolean(),
-  ...timestamps
+  favourite: boolean(),
+  // ...timestamps
 })
 
 export const SYSTEM = pgTable("system", {
