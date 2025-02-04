@@ -17,7 +17,6 @@ app.use(json());
 
 app.use('/user', UserRouter);
 app.use('/workers', WorkerRouter);
-app.use('/test', testRouter);
 app.use('/jobs', jobsRouter);
 
 // Error Hadler Middleware
