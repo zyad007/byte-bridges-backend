@@ -1,14 +1,12 @@
 import CustomError from "./CustomError";
 
 class NotAuthorized extends CustomError {
-    public name: 'NotAuthorized'
     public message: string;
 
-    constructor(message: string = '') {
-        super('NotAuthorized', message)
-        this.name = 'NotAuthorized'
-        this.message = message
+    constructor(message: string = '', code: number = 0) {
+        super(code, message)
     }
+
 }
 
 export default NotAuthorized

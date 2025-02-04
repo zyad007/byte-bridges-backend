@@ -10,48 +10,35 @@ export const testErrorHandler = (err: CustomError, req: Request, res: Response, 
     const handler = 'TEST_HANDLER';
 
     if (err instanceof BadRequest) {
-        return res.status(400).send(new Result(
-            false,
-            '',
-            {
-                handler: handler,
-                ...err,
-                message: err.message
-            }
-        ))
+        return res.status(400).send(new Result({
+            status: false,
+            message: err.message,
+            handler: handler,
+            validation: err.validation
+        }))
+
     }
 
     if (err instanceof DatabaseError) {
-        return res.status(500).send(new Result(
-            false,
-            '',
-            {
-                handler: handler,
-                name: 'DataBaseError',
-                message: err.message
-            }))
+        return res.status(500).send(new Result({
+            status: false,
+            message: err.message,
+            handler: handler,
+        }))
     }
 
     if (err instanceof NotAuthorized) {
-        return res.status(401).send(new Result(
-            false,
-            '',
-            {
-                handler: handler,
-                ...err,
-                message: err.message
-            }
-        ))
+        return res.status(401).send(new Result({
+            status: false,
+            message: err.message,
+            handler: handler,
+        }))
     }
 
-    return res.status(500).send(new Result(
-        false,
-        '',
-        {
-            handler: handler,
-            name: err.name,
-            message: err.message || 'Something failed!',
-        }
-    ))
+    return res.status(500).send(new Result({
+        status: false,
+        message: err.message,
+        handler: handler,
+    }))
 
 }
