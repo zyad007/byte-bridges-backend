@@ -1,6 +1,8 @@
 export enum WorkerStatus {
     ACTIVE = 'ACTIVE',
-    DISABLED = 'DISABLED'
+    INACTIVE = 'INACTIVE',
+    DISABLED = 'DISABLED',
+    FAILED = 'FAILED'
 }
 
 

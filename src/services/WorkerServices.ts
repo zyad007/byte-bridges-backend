@@ -3,14 +3,18 @@ import { Workers } from "../db/schema"
 import { eq } from "drizzle-orm"
 import BadRequest from "../errors/BadRequest"
 import NotFound from "../errors/NotFound"
-import { CreateWorkerType } from "../schemas/CreateWorker"
 import { WorkerStatus } from "../enum/WorkerStatus"
-import { UpdateWorkerType } from "../schemas/UpdateWorker"
 import { like } from "drizzle-orm"
 
-export const getWorkers = async (search: string | undefined) => {
-    const workers = await db.select().from(Workers).where(like(Workers.searchUrl, `%${search}%`))
+export const getWorkers = async (search?: string, page: number = 1, limit: number = 100) => {
+    if (search) {
+        const workers = await db.select().from(Workers).where(like(Workers.query, `%${search}%`))
+        return workers
+    }
+
+    const workers = await db.select().from(Workers)
     return workers
+
 }
 
 export const getWorkerById = async (id: number) => {
@@ -23,48 +27,80 @@ export const getWorkerById = async (id: number) => {
     return worker[0]
 }
 
-export const createWorker = async (searchUrl: string) => {
+export const createWorker = async (worker: {
+    name?: string,
+    description?: string,
 
-    try {
-        new URL(searchUrl)
-    }
-    catch (error) {
-        throw new BadRequest("Invalid search URL")
-    }
+    query: string,
 
+    jobType?: string,
+
+    fixedPrice?: string,
+    proposalsNumber?: string,
+
+    verifiedOnly?: boolean,
+    previousClientsOnly?: boolean,
+    notify?: boolean,
+    status?: WorkerStatus,
+}) => {
 
     const newWorker = await db.insert(Workers).values({
-        searchUrl,
-        status: WorkerStatus.DISABLED,
-        notify: false,
-        jobCount: 0
+        name: worker.name ?? '',
+        description: worker.description ?? '',
 
+        query: worker.query,
+
+        jobType: worker.jobType ?? '',
+        fixedPrice: worker.fixedPrice ?? '',
+        proposalsNumber: worker.proposalsNumber ?? '',
+        verifiedOnly: worker.verifiedOnly ?? false,
+        previousClientsOnly: worker.previousClientsOnly ?? false,
+        notify: worker.notify ?? false,
+        status: worker.status ?? WorkerStatus.INACTIVE,
     }).returning()
 
 
     return newWorker[0]
 }
 
-export const updateWorker = async (id: number, worker: UpdateWorkerType) => {
+export const updateWorker = async (id: number, worker: {
+    name?: string,
+    description?: string,
 
-    const { searchUrl, status, notify } = worker
+    query?: string,
+
+    jobType?: string,
+
+    fixedPrice?: string,
+    proposalsNumber?: string,
+
+    verifiedOnly?: boolean,
+    previousClientsOnly?: boolean,
+
+    status?: WorkerStatus,
+    notify?: boolean,
+}) => {
 
     const originalWorker = await getWorkerById(id);
 
-    if (searchUrl) {
-        try {
-            new URL(searchUrl)
-        }
-        catch (error) {
-            throw new BadRequest("Invalid search URL")
-        }
-    }
-
     const updatedWorker = await db.update(Workers).set({
-        searchUrl: searchUrl ?? originalWorker.searchUrl,
-        status: status ?? originalWorker.status,
-        notify: notify ?? originalWorker.notify
+        name: worker.name ?? originalWorker.name,
+        description: worker.description ?? originalWorker.description,
+
+        query: worker.query ?? originalWorker.query,
+
+        jobType: worker.jobType ?? originalWorker.jobType,
+
+        fixedPrice: worker.fixedPrice ?? originalWorker.fixedPrice,
+        proposalsNumber: worker.proposalsNumber ?? originalWorker.proposalsNumber,
+
+        verifiedOnly: worker.verifiedOnly ?? originalWorker.verifiedOnly,
+        previousClientsOnly: worker.previousClientsOnly ?? originalWorker.previousClientsOnly,
+
+        status: worker.status ?? originalWorker.status,
+        notify: worker.notify ?? originalWorker.notify,
     }).where(eq(Workers.id, id)).returning()
+
 
     return updatedWorker[0]
 }
@@ -74,4 +110,3 @@ export const deleteWorker = async (id: number) => {
     await db.delete(Workers).where(eq(Workers.id, id))
     return
 }
-
