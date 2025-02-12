@@ -4,7 +4,7 @@ import './db/index'
 import UserRouter from "./api/UserRouter";
 import WorkerRouter from "./api/WorkerRouter";
 import jobsRouter from "./api/JobsRouter";
-
+import { auth } from "./middlewares/Auth";
 console.log('ENV:' + process.env.NODE_ENV);
 
 const app = express();
@@ -16,8 +16,8 @@ app.use(json());
 // Routers Middleware
 
 app.use('/user', UserRouter);
-app.use('/workers', WorkerRouter);
-app.use('/jobs', jobsRouter);
+app.use('/workers', auth, WorkerRouter);
+app.use('/jobs', auth, jobsRouter);
 
 // Error Hadler Middleware
 app.use(globalErrorHandler);

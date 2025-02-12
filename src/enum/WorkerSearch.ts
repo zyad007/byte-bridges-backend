@@ -10,6 +10,7 @@ export enum JobProposalsNumber {
     TEN_TO_FIFTEEN = '10-15',
     FIFTEEN_TO_TWENTY = '15-20',
     TWENTY_TO_FIFTY = '20-50',
+    FIFTY_AND_UP = '50-', // Jobs only (Not in Workers)
 }
 
 export enum JobFixedPrice {

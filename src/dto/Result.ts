@@ -2,20 +2,17 @@ interface IResult {
     data?: any,
     message?: string,
     status: boolean,
-    responseTime: Date,
+    responseDate: Date,
     handler?: string,
     validation?: string[]
 }
-
-
-
 
 export class Result implements IResult {
 
     data?: any;
     message?: string;
     status: boolean;
-    responseTime: Date;
+    responseDate: Date;
     handler?: string;
     validation?: string[];
 
@@ -34,11 +31,8 @@ export class Result implements IResult {
         this.message = message;
         this.status = status;
         this.handler = handler;
-        this.responseTime = new Date(new Date().getTime());
+        this.responseDate = new Date(new Date().getTime());
         this.validation = validation;
     }
-
-
-
 
 }
