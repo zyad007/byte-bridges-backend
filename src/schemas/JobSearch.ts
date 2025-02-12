@@ -32,23 +32,23 @@ export const JobSearchSchema = z.object({
 
     customPriceRange: z.object({
         fixed: z.object({
-            min: z.number(),
-            max: z.number(),
+            min: z.number().optional(),
+            max: z.number().optional(),
         }).optional(),
         hourly: z.object({
-            min: z.number(),
-            max: z.number(),
+            min: z.number().optional(),
+            max: z.number().optional(),
         }).optional(),
     }).optional(),
 
     clientSpentRange: z.object({
-        max: z.number(),
-        min: z.number(),
+        max: z.number().optional(),
+        min: z.number().optional(),
     }).optional(),
 
     clientRatingRange: z.object({
-        max: z.number(),
-        min: z.number(),
+        max: z.number().optional(),
+        min: z.number().optional(),
     }).optional(),
 })
 
