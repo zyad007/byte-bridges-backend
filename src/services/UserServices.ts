@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { User } from "../types/User";
 import { Users } from "../db/schema";
 import BadRequest from "../errors/BadRequest";
 import bcrypt from 'bcrypt'

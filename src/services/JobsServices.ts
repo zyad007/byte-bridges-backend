@@ -1,30 +1,121 @@
-import { and, eq, ilike, like, or } from "drizzle-orm";
+import { and, between, eq, gte, ilike, inArray, like, lte, or } from "drizzle-orm";
 import { db } from "../db";
 import { Jobs } from "../db/schema";
+import { JobSearchType } from "../schemas/JobSearch";
 
 export async function getAll(
     page: number,
     limit: number,
-    search: string,
-    interested: boolean
+    jobSearch: JobSearchType
 ) {
     try {
         const offset = (page - 1) * limit;
 
         let conditions = [];
 
-        if (search) {
-            conditions.push(or(ilike(Jobs.title, `%${search}%`), ilike(Jobs.description, `%${search}%`)));
+        const workerId = jobSearch.workerId;
+
+        if (jobSearch.query) {
+            conditions.push(or(ilike(Jobs.title, `%${jobSearch.query}%`), ilike(Jobs.description, `%${jobSearch.query}%`)));
         }
 
-        if (interested) {
-            conditions.push(eq(Jobs.ignore, false));
+        if (jobSearch.isHourly) {
+            conditions.push(eq(Jobs.type, "HOURLY"));
         }
 
-        let query = db.select().from(Jobs).where(and(...conditions)).limit(limit).offset(offset);
+        if (jobSearch.isFixedPrice) {
+            conditions.push(eq(Jobs.type, "FIXED"));
+        }
+
+        if (jobSearch.priceRanges) {
+            const priceConditions = [];
+            for (const priceRange of jobSearch.priceRanges) {
+
+                const [min, max] = priceRange.split("-");
+                if (min && max) {
+                    priceConditions.push(between(Jobs.amount, parseInt(min), parseInt(max)));
+                }
+
+                if (min && !max) {
+                    priceConditions.push(gte(Jobs.amount, parseInt(min)));
+                }
+
+                if (!min && max) {
+                    priceConditions.push(lte(Jobs.amount, parseInt(max)));
+                }
+            }
+
+            conditions.push(or(...priceConditions));
+        }
+
+        if (jobSearch.customPriceRange) {
+            if (jobSearch.customPriceRange.fixed) {
+                const { min, max } = jobSearch.customPriceRange.fixed;
+                if (min && max) {
+                    conditions.push(between(Jobs.amount, min, max));
+                }
+
+                if (min && !max) {
+                    conditions.push(gte(Jobs.amount, min));
+                }
+
+                if (max && !min) {
+                    conditions.push(lte(Jobs.amount, max));
+                }
+            }
+
+            // TODO: Add hourly range
+            // if (jobSearch.customPriceRange.hourly) {
+
+            // }
+        }
+
+        if (jobSearch.proposalsRanges) {
+            const propoalsConditions = [];
+            for (const proposalsRange of jobSearch.proposalsRanges) {
+                propoalsConditions.push(eq(Jobs.proposalsNumber, proposalsRange));
+            }
+            conditions.push(or(...propoalsConditions));
+        }
+
+        if (jobSearch.verifiedOnly) {
+            conditions.push(eq(Jobs.paymentVerified, true));
+        }
+
+        if (jobSearch.clientSpentRange) {
+            const { min, max } = jobSearch.clientSpentRange;
+            if (min && max) {
+                conditions.push(between(Jobs.clientSpent, min, max));
+            }
+
+            if (min && !max) {
+                conditions.push(gte(Jobs.clientSpent, min));
+            }
+
+            if (max && !min) {
+                conditions.push(lte(Jobs.clientSpent, max));
+            }
+        }
+
+        if (jobSearch.clientRatingRange) {
+            const { min, max } = jobSearch.clientRatingRange;
+            if (min && max) {
+                conditions.push(between(Jobs.clientRate, min, max));
+            }
+
+            if (min && !max) {
+                conditions.push(gte(Jobs.clientRate, min));
+            }
+
+            if (max && !min) {
+                conditions.push(lte(Jobs.clientRate, max));
+            }
+        }
+
+        let query = db.select().from(Jobs).where(and((workerId ? eq(Jobs.workerId, workerId) : undefined), and(...conditions))).limit(limit).offset(offset);
 
         const jobs = await query;
-        
+
         return jobs;
     } catch (error) {
         throw error;
@@ -50,7 +141,7 @@ export async function getFavorites(
         let query = db.select().from(Jobs).where(and(...conditions)).limit(limit).offset(offset);
 
         const jobs = await query;
-        
+
         return jobs;
     } catch (error) {
         throw error;

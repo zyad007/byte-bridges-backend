@@ -1,9 +1,11 @@
 import express from 'express';
 import { addJobToFavorites, getFavoriteJobs, getJobs, removeJobFromFavorites, markJobAsNotInterested, markJobAsInterested } from '../controllers/JobsController';
+import { bodyValidation } from '../middlewares/Validation';
+import { JobSearchSchema } from '../schemas/JobSearch';
 
 const router = express.Router();
 
-router.get('/', getJobs);
+router.get('/', bodyValidation(JobSearchSchema), getJobs);
 router.get('/favorites', getFavoriteJobs);
 router.put('/fav/:id', addJobToFavorites);
 router.put('/unfav/:id', removeJobFromFavorites);

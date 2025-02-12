@@ -1,4 +1,4 @@
-import { boolean, integer, numeric, pgEnum, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, numeric, pgEnum, pgTable, real, timestamp, varchar } from "drizzle-orm/pg-core";
 
 const timestamps = {
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -51,20 +51,24 @@ export const Workers = pgTable("workers", {
 
 export const Jobs = pgTable("jobs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  workerId: integer('worker_id').references(() => Workers.id).notNull(),
+
   url: varchar('url'),
   title: varchar('title'),
   description: varchar('description'),
-  workerId: integer('worker_id').references(() => Workers.id),
+
   postedAt: timestamp('posted_at'),
-  type: varchar('type').notNull(),
-  amount: integer('amount'),
 
   tags: varchar('tags'),
-  clientRate: numeric('client_rate'),
+  clientRate: real('client_rate'),
   clientSpent: integer('client_spent'),
   clientLocation: varchar('client_location'),
-  paymentVerfied: boolean('payment_verified'),
-  proposalCount: varchar('proposal_count'), //0-5,5-10,10-15,15-20,20-50,50-
+
+  type: varchar('type').notNull(), // FIXED, HOURLY
+  amount: integer('amount'),
+  hourlyRateRange: varchar('hourly_rate_range'), // [MIN]-[MAX] $/hour
+  paymentVerified: boolean('payment_verified'),
+  proposalsNumber: varchar('proposals_number'), //0-5,5-10,10-15,15-20,20-50,50-
 
   ignore: boolean('ignore'),
   favourite: boolean('favourite'),
