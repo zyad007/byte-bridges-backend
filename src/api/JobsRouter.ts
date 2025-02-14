@@ -5,7 +5,7 @@ import { JobSearchSchema } from '../schemas/JobSearch';
 
 const router = express.Router();
 
-router.get('/', bodyValidation(JobSearchSchema), getJobs);
+router.post('/', bodyValidation(JobSearchSchema), getJobs);
 router.get('/favorites', getFavoriteJobs);
 router.put('/fav/:id', addJobToFavorites);
 router.put('/unfav/:id', removeJobFromFavorites);
