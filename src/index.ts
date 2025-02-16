@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import express, { json } from "express";
 import { globalErrorHandler } from "./middlewares/handlers/GlobalErrorHandler";
 import './db/index'
@@ -5,7 +8,6 @@ import UserRouter from "./api/UserRouter";
 import WorkerRouter from "./api/WorkerRouter";
 import jobsRouter from "./api/JobsRouter";
 import { auth } from "./middlewares/Auth";
-console.log('ENV:' + process.env.NODE_ENV);
 
 const app = express();
 const port = process.env.PORT || 3000;
