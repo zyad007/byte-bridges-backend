@@ -8,9 +8,14 @@ import UserRouter from "./api/UserRouter";
 import WorkerRouter from "./api/WorkerRouter";
 import jobsRouter from "./api/JobsRouter";
 import { auth } from "./middlewares/Auth";
+import { initializeSocket } from './socket.client';
+console.log('ENV:' + process.env.NODE_ENV);
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Initialize socket connection
+const socket = initializeSocket();
 
 // JSON Parser Middleware
 app.use(json());

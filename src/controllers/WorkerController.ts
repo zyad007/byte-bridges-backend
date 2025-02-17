@@ -5,6 +5,7 @@ import { JobType } from "../enum/WorkerSearch";
 import { WorkerStatus } from "../enum/WorkerStatus";
 import { WorkerUpdateType } from "../schemas/WorkerUpdate";
 import { WorkerCreateType } from "../schemas/WorkerCreate";
+import { getSocket } from "../socket.client";
 
 export const getWorkersAPI: RequestHandler<{}, {}, {}, { search?: string, page?: number, limit?: number }> = async (req, res, next) => {
     try {
@@ -35,45 +36,9 @@ export const getWorkerByIdAPI: RequestHandler<{ id: number }> = async (req, res,
 
 export const createWorkerAPI: RequestHandler = async (req, res, next) => {
     try {
-        const {
-            query,
-            priceRanges,
-            proposalsRanges,
-            verifiedOnly,
-            previousClientsOnly,
-            workerName,
-            workerDescription,
-            isFixedPrice,
-            isHourly
-        } = req.body as WorkerCreateType
-
-        const fixedPrice = priceRanges ? priceRanges.join(',') : ''
-        const proposalsNumber = proposalsRanges ? proposalsRanges.join(',') : ''
-
-        let jobType = JobType.BOTH
-
-        if (isFixedPrice && !isHourly) {
-            jobType = JobType.FIXED_PRICE
-        }
-        if (!isFixedPrice && isHourly) {
-            jobType = JobType.HOURLY
-        }
-
-        const worker = await createWorker({
-            query,
-            fixedPrice,
-            proposalsNumber,
-            verifiedOnly,
-            previousClientsOnly,
-            name: workerName ?? query,
-            description: workerDescription,
-            jobType,
-
-            status: WorkerStatus.ACTIVE,
-            notify: true
-        })
-
-        res.status(201).json(worker)
+        const socket = getSocket()
+        socket.emit('create_worker', req.body)
+        res.status(201).json({ message: 'Worker created successfully' })
     }
 
     catch (error) {
@@ -90,42 +55,9 @@ export const updateWorkerAPI: RequestHandler = async (req, res, next) => {
             throw new BadRequest("Invalid worker id")
         }
 
-        const {
-            query,
-            priceRanges,
-            proposalsRanges,
-            verifiedOnly,
-            previousClientsOnly,
-            workerName,
-            workerDescription,
-            isFixedPrice,
-            isHourly
-        } = req.body as WorkerUpdateType
-
-
-        const fixedPrice = priceRanges ? priceRanges.join(',') : ''
-        const proposalsNumber = proposalsRanges ? proposalsRanges.join(',') : ''
-
-        let jobType = JobType.BOTH
-
-        if (isFixedPrice && !isHourly) {
-            jobType = JobType.FIXED_PRICE
-        }
-        if (!isFixedPrice && isHourly) {
-            jobType = JobType.HOURLY
-        }
-
-        const worker = await updateWorker(+id, {
-            query,
-            fixedPrice,
-            proposalsNumber,
-            verifiedOnly,
-            previousClientsOnly,
-            name: workerName,
-            description: workerDescription,
-            jobType,
-        })
-        res.status(200).json(worker)
+        const socket = getSocket()
+        socket.emit('update_worker', { id, ...req.body })
+        res.status(200).json({ message: 'Worker updated successfully' })
     }
 
     catch (error) {
@@ -142,7 +74,8 @@ export const deleteWorkerAPI: RequestHandler<{ id: number }> = async (req, res, 
             throw new BadRequest("Invalid worker id")
         }
 
-        await deleteWorker(id)
+        const socket = getSocket()
+        socket.emit('delete_worker', id)
         res.status(204).send()
     }
 
@@ -159,9 +92,8 @@ export const activateWorkerAPI: RequestHandler<{ id: number }> = async (req, res
             throw new BadRequest("Invalid worker id")
         }
 
-        await updateWorker(+id, {
-            status: WorkerStatus.ACTIVE,
-        })
+        const socket = getSocket()
+        socket.emit('activate_worker', id)
 
         res.status(204).send()
     }
@@ -178,9 +110,8 @@ export const deactivateWorkerAPI: RequestHandler<{ id: number }> = async (req, r
             throw new BadRequest("Invalid worker id")
         }
 
-        await updateWorker(+id, {
-            status: WorkerStatus.INACTIVE,
-        })
+        const socket = getSocket()
+        socket.emit('deactivate_worker', id)
 
         res.status(204).send()
     }
