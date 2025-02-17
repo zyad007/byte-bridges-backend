@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_SERVER_URL = process.env.SOCKET_SERVER_URL || 'http://localhost:3000';
+const SOCKET_SERVER_URL = process.env.SOCKET_SERVER_URL || 'ws://localhost:3000';
 
 let socketInstance: Socket | null = null;
 
