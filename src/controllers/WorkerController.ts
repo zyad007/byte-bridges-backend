@@ -6,6 +6,7 @@ import { WorkerStatus } from "../enum/WorkerStatus";
 import { WorkerUpdateType } from "../schemas/WorkerUpdate";
 import { WorkerCreateType } from "../schemas/WorkerCreate";
 import { getSocket } from "../socket.client";
+import { Result } from "../dto/Result";
 
 export const getWorkersAPI: RequestHandler<{}, {}, {}, { search?: string, page?: number, limit?: number }> = async (req, res, next) => {
     try {
@@ -38,7 +39,7 @@ export const createWorkerAPI: RequestHandler = async (req, res, next) => {
     try {
         const socket = getSocket()
         socket.emit('create_worker', req.body)
-        res.status(201).json({ message: 'Worker created successfully' })
+        res.status(201).json(new Result({ status: true, message: "Worker created successfully", data: null }))
     }
 
     catch (error) {
@@ -57,7 +58,7 @@ export const updateWorkerAPI: RequestHandler = async (req, res, next) => {
 
         const socket = getSocket()
         socket.emit('update_worker', { id, ...req.body })
-        res.status(200).json({ message: 'Worker updated successfully' })
+        res.status(200).json(new Result({ status: true, message: "Worker updated successfully", data: null }))
     }
 
     catch (error) {
