@@ -4,7 +4,7 @@ import { JobFixedPrice } from '../enum/WorkerSearch'
 export const JobSearchSchema = z.object({
     query: z.string({
         required_error: "query is required"
-    }),
+    }).optional(),
 
     isHourly: z.boolean().optional(),
     isFixedPrice: z.boolean().optional(),
@@ -28,7 +28,7 @@ export const JobSearchSchema = z.object({
 
     verifiedOnly: z.boolean().optional(),
 
-    workerId: z.number().optional(),
+    workerIds: z.array(z.number()).optional(),
 
     customPriceRange: z.object({
         fixed: z.object({
