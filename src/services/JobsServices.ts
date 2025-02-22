@@ -13,20 +13,22 @@ export async function getAll(
 
         let conditions = [];
 
-        const workerId = jobSearch.workerId;
-
+        // Query
         if (jobSearch.query) {
             conditions.push(or(ilike(Jobs.title, `%${jobSearch.query}%`), ilike(Jobs.description, `%${jobSearch.query}%`)));
         }
 
+        // Type: Hourly
         if (jobSearch.isHourly) {
             conditions.push(eq(Jobs.type, "HOURLY"));
         }
 
+        // Type: Fixed Price
         if (jobSearch.isFixedPrice) {
             conditions.push(eq(Jobs.type, "FIXED"));
         }
 
+        // Price Ranges
         if (jobSearch.priceRanges) {
             const priceConditions = [];
             for (const priceRange of jobSearch.priceRanges) {
@@ -48,6 +50,7 @@ export async function getAll(
             conditions.push(or(...priceConditions));
         }
 
+        // Custom Price Range
         if (jobSearch.customPriceRange) {
             if (jobSearch.customPriceRange.fixed) {
                 const { min, max } = jobSearch.customPriceRange.fixed;
@@ -70,6 +73,7 @@ export async function getAll(
             // }
         }
 
+        // Proposals Ranges
         if (jobSearch.proposalsRanges) {
             const propoalsConditions = [];
             for (const proposalsRange of jobSearch.proposalsRanges) {
@@ -78,10 +82,12 @@ export async function getAll(
             conditions.push(or(...propoalsConditions));
         }
 
+        // Verified Only
         if (jobSearch.verifiedOnly) {
             conditions.push(eq(Jobs.paymentVerified, true));
         }
 
+        // Client Spent Range
         if (jobSearch.clientSpentRange) {
             const { min, max } = jobSearch.clientSpentRange;
             if (min && max) {
@@ -97,6 +103,7 @@ export async function getAll(
             }
         }
 
+        // Client Rating Range
         if (jobSearch.clientRatingRange) {
             const { min, max } = jobSearch.clientRatingRange;
             if (min && max) {
@@ -112,7 +119,12 @@ export async function getAll(
             }
         }
 
-        let query = db.select().from(Jobs).where(and((workerId ? eq(Jobs.workerId, workerId) : undefined), and(...conditions))).limit(limit).offset(offset);
+        // Worker IDs
+        if (jobSearch.workerIds) {
+            conditions.push(inArray(Jobs.workerId, jobSearch.workerIds));
+        }
+
+        let query = db.select().from(Jobs).where(and(...conditions)).limit(limit).offset(offset);
 
         const jobs = await query;
 
