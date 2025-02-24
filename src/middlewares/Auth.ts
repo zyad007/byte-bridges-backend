@@ -16,7 +16,9 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         try {
-            const decoded: Token = verify(token, process.env.SECRET as string) as any;
+            const decoded: Token = verify(token, process.env.SECRET as string, {
+                ignoreExpiration: true
+            }) as any;
             const user = await db.select().from(Users).where(eq(Users.id, decoded.id));
             if (!user) {
                 return next(new NotAuthorized('Invalid token'));
