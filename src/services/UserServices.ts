@@ -78,7 +78,7 @@ export async function login(email: string, password: string) {
         throw new BadRequest("Invalid password");
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET as string, { expiresIn: '1h' })
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET as string)
 
     return {
         token,
