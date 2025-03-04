@@ -80,3 +80,48 @@ export const SYSTEM = pgTable("system", {
   mutaAll: boolean('muta_all'),
   ...timestamps
 })
+
+
+export const Contracts = pgTable("contracts", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+
+  owner: varchar('owner'),
+  title: varchar('title'),
+  type: varchar('type'), // FIXED, HOURLY
+
+  startDate: timestamp('start_date'),
+  nextDeadline: timestamp('next_deadline'),
+  deadline: timestamp('deadline'),
+
+  progress: integer('progress'),
+  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED
+  paid: integer('paid'),
+  total: integer('total'),
+
+  notes: varchar('notes'),
+  ...timestamps
+})
+
+export const Milestones = pgTable("milestones", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  contractId: integer('contract_id').references(() => Contracts.id).notNull(),
+
+  title: varchar('title'),
+  description: varchar('description'),
+
+  amount: integer('amount'),
+  dueDate: timestamp('due_date'),
+  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED
+  ...timestamps
+})
+
+export const Attachments = pgTable("attachments", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  contractId: integer('contract_id').references(() => Contracts.id).notNull(),
+
+  name: varchar('name'),
+  size: integer('size'),
+  type: varchar('type'),
+  url: varchar('url'),
+  ...timestamps
+})

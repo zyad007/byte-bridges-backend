@@ -47,8 +47,8 @@ export const JobSearchSchema = z.object({
     }).optional(),
 
     clientRatingRange: z.object({
-        max: z.number().optional(),
-        min: z.number().optional(),
+        max: z.number().max(5).optional(),
+        min: z.number().min(1).optional(),
     }).optional(),
 })
 
