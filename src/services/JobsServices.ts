@@ -15,7 +15,7 @@ export async function getAll(
 
         // Query
         if (jobSearch.query) {
-            conditions.push(or(ilike(Jobs.title, `%${jobSearch.query}%`), ilike(Jobs.description, `%${jobSearch.query}%`)));
+            conditions.push(or(ilike(Jobs.title, `%${jobSearch.query}%`), ilike(Jobs.description, `%${jobSearch.query.toLowerCase()}%`)));
         }
 
         // Type: Hourly
