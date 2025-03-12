@@ -85,20 +85,24 @@ export const SYSTEM = pgTable("system", {
 export const Contracts = pgTable("contracts", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
 
-  owner: varchar('owner'),
-  title: varchar('title'),
+  ownerName: varchar('owner_name').notNull(),
+  ownerEmail: varchar('owner_email'),
+  ownerPhone: varchar('owner_phone'),
+
+  title: varchar('title').notNull(),
+  description: varchar('description'),
+
   type: varchar('type'), // FIXED, HOURLY
 
-  startDate: timestamp('start_date'),
+  startDate: timestamp('start_date').notNull(),
   nextDeadline: timestamp('next_deadline'),
   deadline: timestamp('deadline'),
 
   progress: integer('progress'),
-  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED
+  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED, PENDING
   paid: integer('paid'),
   total: integer('total'),
 
-  notes: varchar('notes'),
   ...timestamps
 })
 

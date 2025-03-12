@@ -1,12 +1,11 @@
-export enum ContractType {
-    FIXED = 'FIXED',
-    HOURLY = 'HOURLY',
+export const ContractStatus = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    COMPLETED: 'COMPLETED',
+    CANCELLED: 'CANCELLED',
+    PENDING: 'PENDING',
 }
 
-export enum ContractStatus {
-    IN_PROGRESS = 'IN_PROGRESS',
-    COMPLETED = 'COMPLETED',
-    CANCELLED = 'CANCELLED',
+export const ContractType = {
+    FIXED: 'FIXED',
+    HOURLY: 'HOURLY',
 }
-
-

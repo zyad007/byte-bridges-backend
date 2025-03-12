@@ -1,11 +1,10 @@
 import { Attachments, Contracts, Milestones } from "../db/schema";
 import { db } from "../db";
-import { asc, desc, eq, like, or } from "drizzle-orm";
-import { ContractStatus } from "../enum/Contracts";
+import { asc, desc, eq, like, or, and } from "drizzle-orm";
 import BadRequest from "../errors/BadRequest";
 
 // CRUD
-export async function createContract(contract: Partial<typeof Contracts.$inferInsert>): Promise<typeof Contracts.$inferInsert> {
+export async function createContract(contract: typeof Contracts.$inferInsert): Promise<typeof Contracts.$inferInsert> {
     const newContract = await db.insert(Contracts).values(contract).returning();
     return newContract[0];
 }
@@ -27,10 +26,10 @@ export async function getContracts({
     limit?: number,
     search?: string,
     type?: string,
-    status?: ContractStatus,
+    status?: string,
     sort?: {
         field: 'total' | 'paid' | 'progress' | 'deadline' | 'nextDeadline' | 'startDate',
-        order: 'ASC' | 'DESC'
+        order: 'asc' | 'desc'
     }
 }): Promise<typeof Contracts.$inferSelect[]> {
 
@@ -40,26 +39,33 @@ export async function getContracts({
 
     const query = db.select().from(Contracts);
 
+    const searchQuery = []
+
     if (search) {
-        query
-            .where(
-                or(
-                    like(Contracts.title, `%${search.toLowerCase()}%`),
-                    like(Contracts.owner, `%${search.toLowerCase()}%`)
-                )
-            );
+        searchQuery.push(
+            or(
+                like(Contracts.title, `%${search}%`),
+                like(Contracts.ownerName, `%${search}%`),
+                like(Contracts.ownerEmail, `%${search}%`),
+                like(Contracts.ownerPhone, `%${search}%`)
+            )
+        );
     }
 
     if (type) {
-        query.where(eq(Contracts.type, type));
+        searchQuery.push(eq(Contracts.type, type));
     }
 
     if (status) {
-        query.where(eq(Contracts.status, status));
+        searchQuery.push(eq(Contracts.status, status));
+    }
+
+    if (searchQuery.length > 0) {
+        query.where(and(...searchQuery));
     }
 
     if (sort) {
-        const order = sort.order === 'ASC' ? asc : desc;
+        const order = sort.order === 'asc' ? asc : desc;
         query.orderBy(order(Contracts[sort.field]));
     }
 
