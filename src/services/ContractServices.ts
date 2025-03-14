@@ -2,6 +2,7 @@ import { Attachments, Contracts, Milestones } from "../db/schema";
 import { db } from "../db";
 import { asc, desc, eq, like, or, and } from "drizzle-orm";
 import BadRequest from "../errors/BadRequest";
+import NotFound from "../errors/NotFound";
 
 // CRUD
 export async function createContract(contract: typeof Contracts.$inferInsert): Promise<typeof Contracts.$inferInsert> {
@@ -9,9 +10,19 @@ export async function createContract(contract: typeof Contracts.$inferInsert): P
     return newContract[0];
 }
 
-export async function getContract(id: number): Promise<typeof Contracts.$inferSelect> {
+export async function getContract(id: number): Promise<typeof Contracts.$inferSelect & { milestones: typeof Milestones.$inferSelect[] }> {
     const contract = await db.select().from(Contracts).where(eq(Contracts.id, id));
-    return contract[0];
+
+    if (!contract[0] || contract.length === 0) {
+        throw new NotFound("Contract not found");
+    }
+
+    const milestones = await db.select().from(Milestones).where(eq(Milestones.contractId, id)).orderBy(asc(Milestones.id));
+
+    return {
+        ...contract[0],
+        milestones: milestones
+    };
 }
 
 export async function getContracts({
@@ -90,6 +101,11 @@ export async function createMilestone(contractId: number, milestone: Partial<typ
 
 export async function getMilestone(id: number): Promise<typeof Milestones.$inferSelect> {
     const milestone = await db.select().from(Milestones).where(eq(Milestones.id, id));
+
+    if (!milestone[0] || milestone.length === 0) {
+        throw new NotFound("Milestone not found");
+    }
+
     return milestone[0];
 }
 
@@ -115,6 +131,11 @@ export async function createAttachment(contractId: number, attachment: Partial<t
 
 export async function getAttachment(id: number): Promise<typeof Attachments.$inferSelect> {
     const attachment = await db.select().from(Attachments).where(eq(Attachments.id, id));
+
+    if (!attachment[0] || attachment.length === 0) {
+        throw new NotFound("Attachment not found");
+    }
+
     return attachment[0];
 }
 

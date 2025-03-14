@@ -17,7 +17,7 @@ export const CreateContractSchema = z.object({
 
     description: z.string().optional(),
 
-    type: z.enum(['fixed', 'hourly']).optional(),
+    type: z.enum(['FIXED', 'HOURLY']).optional(),
 
     startDate: z.string({ required_error: "startDate is required" })
         .transform((str) => new Date(str))
@@ -39,7 +39,7 @@ export const CreateContractSchema = z.object({
 
     paid: z.number().optional(),
 
-    status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
 })
 
 

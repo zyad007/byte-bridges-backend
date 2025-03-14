@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { createContract, deleteContract, getContract, getContracts, updateContract } from "../services/ContractServices";
+import { createContract, deleteContract, getContract, getContracts, getMilestones, updateContract } from "../services/ContractServices";
 import { CreateContractType } from "../schemas/ContractCreate";
 import { Result } from "../dto/Result";
 import { ContractSearchType } from "../schemas/ContractSearch";
@@ -11,14 +11,11 @@ export const createContractAPI = async (req: Request, res: Response, next: NextF
         console.log(contract);
 
         // Ensure dates are proper Date objects
-        const startDate = contract.startDate instanceof Date ?
-            contract.startDate : new Date();
+        const startDate = contract.startDate instanceof Date ? contract.startDate : new Date();
 
-        const deadline = contract.deadline instanceof Date ?
-            contract.deadline : (contract.deadline ? new Date(contract.deadline) : null);
+        const deadline = contract.deadline instanceof Date ? contract.deadline : (contract.deadline ? new Date(contract.deadline) : null);
 
-        const nextDeadline = contract.nextDeadline instanceof Date ?
-            contract.nextDeadline : (contract.nextDeadline ? new Date(contract.nextDeadline) : null);
+        const nextDeadline = contract.nextDeadline instanceof Date ? contract.nextDeadline : (contract.nextDeadline ? new Date(contract.nextDeadline) : null);
 
         const newContract = await createContract({
             ownerName: contract.ownerName,

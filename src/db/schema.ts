@@ -94,11 +94,11 @@ export const Contracts = pgTable("contracts", {
 
   type: varchar('type'), // FIXED, HOURLY
 
-  startDate: timestamp('start_date').notNull(),
+  startDate: timestamp('start_date'),
   nextDeadline: timestamp('next_deadline'),
   deadline: timestamp('deadline'),
 
-  progress: integer('progress'),
+  progress: real('progress'),
   status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED, PENDING
   paid: integer('paid'),
   total: integer('total'),
@@ -115,7 +115,7 @@ export const Milestones = pgTable("milestones", {
 
   amount: integer('amount'),
   dueDate: timestamp('due_date'),
-  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED
+  status: varchar('status'), // IN_PROGRESS, COMPLETED, CANCELLED, PENDING
   ...timestamps
 })
 
