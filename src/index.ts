@@ -10,6 +10,7 @@ import jobsRouter from "./api/JobsRouter";
 import { auth } from "./middlewares/Auth";
 import { initializeSocket } from './socket.client';
 import cors from 'cors';
+import contractRouter from './api/ContractsRouter';
 console.log('ENV:' + process.env.NODE_ENV);
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cors({
 app.use('/user', UserRouter);
 app.use('/workers', auth, WorkerRouter);
 app.use('/jobs', auth, jobsRouter);
+app.use('/contracts', auth, contractRouter);
 
 // Error Hadler Middleware
 app.use(globalErrorHandler);
@@ -36,3 +38,5 @@ app.use(globalErrorHandler);
 app.listen(port, () => {
     console.log('Server listening on port: ' + port);
 })
+
+export { app };
